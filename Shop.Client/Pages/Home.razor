@@ -26,8 +26,11 @@
     }
     </tbody>
 </table>
+@if (shopItems == null)
+{
+    <h1>Welcome to your new app. </h1>
+}
 
-Welcome to your new app.
 <script>
     function loguj(res) {
         console.log(res);
@@ -42,12 +45,11 @@ Welcome to your new app.
     protected override async Task OnInitializedAsync()
     {
         var result = await Client.GetAsync("api/Items");
-        await JS.InvokeVoidAsync("loguj", result);
+        // await JS.InvokeVoidAsync("loguj", result);
         if (result.IsSuccessStatusCode)
         {
             shopItems = await result.Content.ReadFromJsonAsync<List<ShopItem>>();
+            await base.OnInitializedAsync();
         }
-
-        await base.OnInitializedAsync();
     }
 }
