@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Shop.Data;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shop.Shared;
 
@@ -21,12 +20,9 @@ public class ItemsController(ApplicationDbContext context) : ControllerBase
     public async Task<ActionResult<ShopItem>> GetById(int id)
     {
         var item = await context.ShopItems.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
-        if (item == null)        {
-            return NotFound();
-        }
-        return Ok(item);
+        return item is null ? NotFound() : Ok(item);
     }
-    
+
     // [HttpPost]
     // public async Task<IActionResult> AddItem(Shop.Shared.ShopItem item)
     // {
