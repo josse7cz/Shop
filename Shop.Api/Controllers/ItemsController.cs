@@ -23,11 +23,35 @@ public class ItemsController(ApplicationDbContext context) : ControllerBase
         return item is null ? NotFound() : Ok(item);
     }
 
-    // [HttpPost]
-    // public async Task<IActionResult> AddItem(Shop.Shared.ShopItem item)
-    // {
-    //     context.ShopItems.Add(item);
-    //     await context.SaveChangesAsync();
-    //     return CreatedAtAction(nameof(GetItems), new { id = item.Id }, item);
-    // }
+    [HttpPost]
+    public async Task<ActionResult<ShopItem>> Create([FromBody] ShopItem item)
+    {
+        await context.ShopItems.AddAsync(item);
+        await context.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<ShopItem>> Update(int id, [FromBody] ShopItem item)
+    {
+        var updatedItem = await context.ShopItems.FirstOrDefaultAsync(i => i.Id == id);
+        if (updatedItem is null) return NotFound();
+        updatedItem.Name = item.Name;
+        updatedItem.IsBuy = item.IsBuy;
+        updatedItem.Price = item.Price;
+        updatedItem.ActionTo = item.ActionTo;
+        updatedItem.Shop = item.Shop;
+        await context.SaveChangesAsync();
+        return Ok(updatedItem);
+    }
+    
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> Delete(int id)
+    {
+        var deletedItem = await context.ShopItems.FindAsync(id);
+        if (deletedItem is null) return NotFound();
+        context.ShopItems.Remove(deletedItem);
+        await context.SaveChangesAsync();
+        return NoContent();
+    }
 }
