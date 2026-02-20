@@ -4,7 +4,28 @@
 @inject IJSRuntime JS
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Koupeno</th>
+        <th>Položka</th>
+        <th>Obchod</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (shopItems != null)
+    {
+        foreach (var item in shopItems)
+        {
+            <tr>
+                <td>@(item.IsBuy ? "ano" : "ne")</td>
+                <td>@item.Name</td>
+                <td>@item.Shop</td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
 
 Welcome to your new app.
 <script>
@@ -12,15 +33,21 @@ Welcome to your new app.
         console.log(res);
     }
 </script>
+
 @code
 {
-    [Inject]HttpClient Client { get; set; }
+    [Inject] HttpClient Client { get; set; }
     private List<ShopItem>? shopItems;
-    
+
     protected override async Task OnInitializedAsync()
     {
         var result = await Client.GetAsync("api/Items");
         await JS.InvokeVoidAsync("loguj", result);
+        if (result.IsSuccessStatusCode)
+        {
+            shopItems = await result.Content.ReadFromJsonAsync<List<ShopItem>>();
+        }
+
         await base.OnInitializedAsync();
     }
 }
