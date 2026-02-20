@@ -1,7 +1,26 @@
 ﻿@page "/"
-
+@using Shop.Shared
+@* @inject HttpClient Client *@
+@inject IJSRuntime JS
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+<script>
+    function loguj(res) {
+        console.log(res);
+    }
+</script>
+@code
+{
+    [Inject]HttpClient Client { get; set; }
+    private List<ShopItem>? shopItems;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Client.GetAsync("api/Items");
+        await JS.InvokeVoidAsync("loguj", result);
+        await base.OnInitializedAsync();
+    }
+}
